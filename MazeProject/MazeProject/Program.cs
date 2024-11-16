@@ -10,12 +10,20 @@ namespace MazeProject
         [STAThread]
         static void Main()
         {
-            var maze = MazeGenerator.GenerateMaze(52, 40, out int width, out int height);
-            for (int i = 0; i < height; i++)
+            var maze = MazeGenerator.GenerateMaze(15, 15, out int width, out int height, 0);
+            for (int j = 0; j < height; j++)
             {
-                for (int j = 0; j < width; j++)
+                for (int i = 0; i < width; i++)
                 {
-                    Console.Write(maze[j, i] == 0 ? "  " : "██");
+                    if (maze[i, j] == (int)MazeCell.Path)
+                        Console.Write("  ");
+                    if (maze[i, j] == (int)MazeCell.Wall)
+                        Console.Write("██");
+                    if (maze[i, j] == (int)MazeCell.Exit)
+                        Console.Write("XX");
+                    if (maze[i, j] == (int)MazeCell.Start)
+                        Console.Write("OO");
+
                 }
                 Console.WriteLine();
             }

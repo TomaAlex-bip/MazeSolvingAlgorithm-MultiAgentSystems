@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <Reference Include="ActressMas">
-      <HintPath>..\..\..\ActressMas-20241003\ActressMas.dll</HintPath>
+      <HintPath>..\..\..\..\..\ActressMas-20241003\ActressMas.dll</HintPath>
     </Reference>
   </ItemGroup>
 
