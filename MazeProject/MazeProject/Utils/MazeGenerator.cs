@@ -87,12 +87,12 @@
                     exitX = actualWidth - 1;
                     exitY = random.Next(actualHeight);
                     while (maze[exitX - 1, exitY] != (int)MazeCell.Path)
-                        exitY = random.Next(actualWidth);
+                        exitY = random.Next(actualHeight);
 
                     startX = 0;
                     startY = random.Next(actualHeight);
                     while (maze[startX + 1, startY] != (int)MazeCell.Path)
-                        startY = random.Next(actualWidth);
+                        startY = random.Next(actualHeight);
                     break;
 
                 case 2:
@@ -111,12 +111,12 @@
                     exitX = 0;
                     exitY = random.Next(actualHeight);
                     while (maze[exitX + 1, exitY] != (int)MazeCell.Path)
-                        exitY = random.Next(actualWidth);
+                        exitY = random.Next(actualHeight);
 
                     startX = actualWidth - 1;
                     startY = random.Next(actualHeight);
                     while (maze[startX - 1, startY] != (int)MazeCell.Path)
-                        startY = random.Next(actualWidth);
+                        startY = random.Next(actualHeight);
                     break;
 
             }
