@@ -68,7 +68,7 @@
 
             int exitX, exitY;
             int startX, startY;
-            int randomSide = 1;//random.Next(3);
+            int randomSide = random.Next(3);
             switch (randomSide)
             {
                 case 0:
