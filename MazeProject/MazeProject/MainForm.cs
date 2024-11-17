@@ -1,17 +1,150 @@
+using MazeProject.Agents;
 using MazeProject.Utils;
-using System.Drawing;
 
 namespace MazeProject
 {
     public partial class MainForm : Form
     {
         private Bitmap? _mazeImage;
-        //private Bitmap _agentsImage;
+        private Bitmap? _agentsImage;
         private int[,]? _maze;
+        private int _startX, _startY;
+
+        private List<MazeAgent> _agents = new();
+        private MazeEnvironment? _environment;
+        private Thread? _simulationThread;
 
         public MainForm()
         {
             InitializeComponent();
+        }
+
+        private void pictureBox_Paint(object sender, PaintEventArgs e)
+        {
+            if (_mazeImage == null)
+                return;
+
+            Bitmap mazeBitmap = new(_mazeImage);
+            e.Graphics.DrawImage(mazeBitmap, 0, 0);
+
+            if (_agentsImage == null)
+                return;
+
+            Bitmap agentsBitmap = new(_agentsImage);
+            e.Graphics.DrawImage(agentsBitmap, 0, 0);
+        }
+
+        private void buttonGenerateMaze_Click(object sender, EventArgs e)
+        {
+            if (_environment != null)
+            {
+                MessageBox.Show("Simulation in progress, cannot generate a new maze!");
+                return;
+            }
+
+            if (_agentsImage != null)
+            {
+                _agentsImage.Dispose();
+                _agentsImage = null;
+                GC.Collect(); // prevents memory leaks
+            }
+
+            var mazeWidth = (int)numericMazeWidth.Value;
+            var mazeHeight = (int)numericMazeHeight.Value;
+            var mazeSeed = (int)numericMazeSeed.Value;
+
+            _maze = MazeGenerator.GenerateMaze(mazeWidth, mazeHeight, out _startX, out _startY, mazeSeed);
+
+            _mazeImage = new Bitmap(pictureBox.Width, pictureBox.Height);
+
+            Graphics g = Graphics.FromImage(_mazeImage);
+
+            DrawMaze(g, _maze);
+
+            pictureBox.Refresh();
+        }
+
+        private void buttonStartSimulation_Click(object sender, EventArgs e)
+        {
+            if (_maze == null)
+            {
+                MessageBox.Show("Generate a maze first!");
+                return;
+            }
+
+            int noAgents = (int)numericNoAgents.Value;
+            if (noAgents <= 0)
+            {
+                MessageBox.Show("At least one agent is needed!");
+                return;
+            }
+
+            if (_environment != null)
+            {
+                var confirmResult = MessageBox.Show("A simulation is still in progress, abort?", "Confirm", MessageBoxButtons.YesNo);
+                if (confirmResult == DialogResult.Yes)
+                {
+                    StopSimulation();
+                    StartSimulation(noAgents, _maze);
+                }
+            }
+            else
+            {
+                StartSimulation(noAgents, _maze);
+            }
+        }
+
+        private void buttonStopSimulation_Click(object sender, EventArgs e)
+        {
+            StopSimulation();
+        }
+
+        private void Agent_OnMoveEvent()
+        {
+            if (_agentsImage != null)
+            {
+                _agentsImage.Dispose();
+                GC.Collect(); // prevents memory leaks
+            }
+
+            _agentsImage = new Bitmap(pictureBox.Width, pictureBox.Height);
+            Graphics g = Graphics.FromImage(_agentsImage);
+            DrawAgents(g);
+            this.Invoke(() =>
+            {
+                pictureBox.Refresh();
+            });
+        }
+
+        private void StartSimulation(int noAgents, int[,] maze)
+        {
+            _environment = new(0, 1000);
+            _agents.Clear();
+            for (int i = 0; i < noAgents; i++)
+            {
+                // create agents and add them to the environment
+                var agent = new MazeAgent(maze, _startX, _startY, $"agent_{i}");
+                _environment.Add(agent);
+                _agents.Add(agent);
+            }
+            _environment.OnAgentMoveEvent += Agent_OnMoveEvent;
+
+            _simulationThread = new Thread(() =>
+            {
+                _environment.Start();
+            });
+            _simulationThread.Start();
+        }
+
+        private void StopSimulation()
+        {
+            if (_environment == null)
+                return;
+
+            foreach (var agent in _environment.AllAgents())
+                _environment.Remove(agent);
+
+            _environment = null;
         }
 
         private void DrawMaze(Graphics g, int[,] maze)
@@ -27,48 +160,91 @@ namespace MazeProject
                     switch (maze[x, y])
                     {
                         case (int)MazeCell.Wall:
-                            g.FillRectangle(new SolidBrush(Color.Black), x * cellSize, y * cellSize, cellSize, cellSize);
+                            g.FillRectangle(Brushes.Black, x * cellSize, y * cellSize, cellSize, cellSize);
                             break;
                         case (int)MazeCell.Start:
-                            g.FillRectangle(new SolidBrush(Color.Red), x * cellSize, y * cellSize, cellSize, cellSize);
+                            g.FillRectangle(Brushes.Red, x * cellSize, y * cellSize, cellSize, cellSize);
                             break;
                         case (int)MazeCell.Exit:
-                            g.FillRectangle(new SolidBrush(Color.LimeGreen), x * cellSize, y * cellSize, cellSize, cellSize);
+                            g.FillRectangle(Brushes.LimeGreen, x * cellSize, y * cellSize, cellSize, cellSize);
                             break;
                     }
                 }
             }
         }
 
-        private void pictureBox_Paint(object sender, PaintEventArgs e)
+        private void DrawAgents(Graphics g)
         {
+            if (_maze == null)
+                return;
+
+            int minXY = Math.Min(pictureBox.Width, pictureBox.Height);
+            int maxMazeXY = Math.Max(_maze.GetLength(0), _maze.GetLength(1));
+            int cellSize = minXY / maxMazeXY;
+            int agentSize = (int)((minXY / maxMazeXY) * 0.9);
+
+            foreach (var agent in _agents)
+            {
+                g.FillEllipse(Brushes.Blue, agent.X * cellSize, agent.Y * cellSize, agentSize, agentSize);
+                AnimateAgent(agent);
+            }
+
+        }
+
+        private void AnimateAgent(MazeAgent agent)
+        {
+            if (_maze == null)
+                return;
+
             if (_mazeImage == null)
                 return;
 
-            Bitmap mazeBitmap = new (_mazeImage);
-            e.Graphics.DrawImage(mazeBitmap, 0, 0);
-        }
+            Bitmap final = new(_mazeImage.Width, _mazeImage.Height);
+            Graphics g = Graphics.FromImage(final);
 
-        private void pictureBox_Resize(object sender, EventArgs e)
-        {
+            int minXY = Math.Min(pictureBox.Width, pictureBox.Height);
+            int maxMazeXY = Math.Max(_maze.GetLength(0), _maze.GetLength(1));
+            int cellSize = minXY / maxMazeXY;
+            int agentSize = (int)((minXY / maxMazeXY) * 0.9);
 
-        }
+            int animationSteps = 2;
+            if (agent.X != agent.OldX)
+            {
+                for (int a = 1; a < animationSteps; a++)
+                {
+                    double dx;
+                    if (agent.X > agent.OldX)
+                        dx = -(animationSteps - a) / (double)animationSteps;
+                    else
+                        dx = (animationSteps - a) / (double)animationSteps;
 
-        private void buttonGenerateMaze_Click(object sender, EventArgs e)
-        {
-            var mazeWidth = (int)numericMazeWidth.Value;
-            var mazeHeight = (int)numericMazeHeight.Value;
-            var mazeSeed = (int)numericMazeSeed.Value;
+                    g.FillEllipse(Brushes.Blue, (int)((agent.X + dx) * cellSize), agent.Y * cellSize, agentSize, agentSize);
 
-            _maze = MazeGenerator.GenerateMaze(mazeWidth, mazeHeight, out var _, out var _, mazeSeed);
-            
-            _mazeImage = new Bitmap(pictureBox.Width, pictureBox.Height);
+                    Graphics pbg = pictureBox.CreateGraphics();
+                    pbg.DrawImage(final, 0, 0);
 
-            Graphics g = Graphics.FromImage(_mazeImage);
+                }
+            }
+            else if (agent.Y != agent.OldY)
+            {
+                for (int a = 0; a <= animationSteps; a++)
+                {
+                    double dy;
+                    if (agent.Y > agent.OldY)
+                        dy = -(animationSteps - a) / (double)animationSteps;
+                    else
+                        dy = (animationSteps - a) / (double)animationSteps;
 
-            DrawMaze(g, _maze);
+                    g.FillEllipse(Brushes.Blue, agent.X * cellSize, (int)((agent.Y + dy) * cellSize), agentSize, agentSize);
 
-            pictureBox.Refresh();
+
+                    Graphics pbg = pictureBox.CreateGraphics();
+                    pbg.DrawImage(final, 0, 0);
+                }
+            }
+
+
+
         }
     }
 }

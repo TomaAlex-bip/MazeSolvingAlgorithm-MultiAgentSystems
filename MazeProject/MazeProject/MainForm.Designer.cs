@@ -39,6 +39,7 @@
             numericNoAgents = new NumericUpDown();
             label4 = new Label();
             numericMazeSeed = new NumericUpDown();
+            buttonStopSimulation = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericMazeWidth).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericMazeHeight).BeginInit();
@@ -48,13 +49,12 @@
             // 
             // pictureBox
             // 
-            pictureBox.Location = new Point(12, 91);
+            pictureBox.Location = new Point(12, 93);
             pictureBox.Name = "pictureBox";
-            pictureBox.Size = new Size(560, 500);
+            pictureBox.Size = new Size(560, 560);
             pictureBox.TabIndex = 0;
             pictureBox.TabStop = false;
             pictureBox.Paint += pictureBox_Paint;
-            pictureBox.Resize += pictureBox_Resize;
             // 
             // buttonStartSimulation
             // 
@@ -64,6 +64,7 @@
             buttonStartSimulation.TabIndex = 1;
             buttonStartSimulation.Text = "Start Simulation";
             buttonStartSimulation.UseVisualStyleBackColor = true;
+            buttonStartSimulation.Click += buttonStartSimulation_Click;
             // 
             // buttonGenerateMaze
             // 
@@ -114,7 +115,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(118, 16);
+            label3.Location = new Point(224, 16);
             label3.Name = "label3";
             label3.Size = new Size(105, 15);
             label3.TabIndex = 8;
@@ -122,7 +123,7 @@
             // 
             // numericNoAgents
             // 
-            numericNoAgents.Location = new Point(229, 14);
+            numericNoAgents.Location = new Point(335, 14);
             numericNoAgents.Name = "numericNoAgents";
             numericNoAgents.Size = new Size(57, 23);
             numericNoAgents.TabIndex = 7;
@@ -145,11 +146,22 @@
             numericMazeSeed.Size = new Size(147, 23);
             numericMazeSeed.TabIndex = 9;
             // 
+            // buttonStopSimulation
+            // 
+            buttonStopSimulation.Location = new Point(118, 12);
+            buttonStopSimulation.Name = "buttonStopSimulation";
+            buttonStopSimulation.Size = new Size(100, 23);
+            buttonStopSimulation.TabIndex = 11;
+            buttonStopSimulation.Text = "Stop Simulation";
+            buttonStopSimulation.UseVisualStyleBackColor = true;
+            buttonStopSimulation.Click += buttonStopSimulation_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(584, 603);
+            ClientSize = new Size(584, 665);
+            Controls.Add(buttonStopSimulation);
             Controls.Add(label4);
             Controls.Add(numericMazeSeed);
             Controls.Add(label3);
@@ -185,5 +197,6 @@
         private NumericUpDown numericNoAgents;
         private Label label4;
         private NumericUpDown numericMazeSeed;
+        private Button buttonStopSimulation;
     }
 }

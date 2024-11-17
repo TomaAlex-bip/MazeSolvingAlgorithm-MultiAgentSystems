@@ -2,10 +2,10 @@
 {
     public static class MazeGenerator
     {
-        public static int[,] GenerateMaze(int width, int height, out int actualWidth, out int actualHeight, int seed = 0)
+        public static int[,] GenerateMaze(int width, int height, out int startX, out int startY, int seed = 0)
         {
-            actualWidth = width;
-            actualHeight = height;
+            int actualWidth = width;
+            int actualHeight = height;
 
             // verify dimensions
             if (actualWidth < 3)
@@ -67,7 +67,6 @@
             }
 
             int exitX, exitY;
-            int startX, startY;
             int randomSide = random.Next(3);
             switch (randomSide)
             {
