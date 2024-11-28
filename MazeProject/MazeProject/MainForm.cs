@@ -7,7 +7,7 @@ namespace MazeProject
     {
         private Bitmap? _mazeImage;
         private Bitmap? _agentsImage;
-        private int[,]? _maze;
+        private Maze? _maze;
         private int _startX, _startY;
 
         private List<MazeAgent> _agents = new();
@@ -53,7 +53,7 @@ namespace MazeProject
             var mazeHeight = (int)numericMazeHeight.Value;
             var mazeSeed = (int)numericMazeSeed.Value;
 
-            _maze = MazeGenerator.GenerateMaze(mazeWidth, mazeHeight, out _startX, out _startY, mazeSeed);
+            _maze = MazeGenerator.GenerateMaze(mazeWidth, mazeHeight, mazeSeed);
 
             _mazeImage = new Bitmap(pictureBox.Width, pictureBox.Height);
 
@@ -116,14 +116,14 @@ namespace MazeProject
             });
         }
 
-        private void StartSimulation(int noAgents, int[,] maze)
+        private void StartSimulation(int noAgents, Maze maze)
         {
             _environment = new(0, 1000);
             _agents.Clear();
             for (int i = 0; i < noAgents; i++)
             {
                 // create agents and add them to the environment
-                var agent = new MazeAgent(maze, _startX, _startY, $"agent_{i}");
+                var agent = new MazeAgent(maze, $"agent_{i}");
                 _environment.Add(agent);
                 _agents.Add(agent);
             }
@@ -147,25 +147,25 @@ namespace MazeProject
             _environment = null;
         }
 
-        private void DrawMaze(Graphics g, int[,] maze)
+        private void DrawMaze(Graphics g, Maze maze)
         {
             int minXY = Math.Min(pictureBox.Width, pictureBox.Height);
-            int maxMazeXY = Math.Max(maze.GetLength(0), maze.GetLength(1));
+            int maxMazeXY = Math.Max(maze.Cells.GetLength(0), maze.Cells.GetLength(1));
             int cellSize = minXY / maxMazeXY;
 
-            for (int x = 0; x < maze.GetLength(0); x++)
+            for (int x = 0; x < maze.Cells.GetLength(0); x++)
             {
-                for (int y = 0; y < maze.GetLength(1); y++)
+                for (int y = 0; y < maze.Cells.GetLength(1); y++)
                 {
-                    switch (maze[x, y])
+                    switch (maze.Cells[x, y].CellType)
                     {
-                        case (int)MazeCell.Wall:
+                        case MazeCell.Wall:
                             g.FillRectangle(Brushes.Black, x * cellSize, y * cellSize, cellSize, cellSize);
                             break;
-                        case (int)MazeCell.Start:
+                        case MazeCell.Start:
                             g.FillRectangle(Brushes.Red, x * cellSize, y * cellSize, cellSize, cellSize);
                             break;
-                        case (int)MazeCell.Exit:
+                        case MazeCell.Exit:
                             g.FillRectangle(Brushes.LimeGreen, x * cellSize, y * cellSize, cellSize, cellSize);
                             break;
                     }
@@ -179,7 +179,7 @@ namespace MazeProject
                 return;
 
             int minXY = Math.Min(pictureBox.Width, pictureBox.Height);
-            int maxMazeXY = Math.Max(_maze.GetLength(0), _maze.GetLength(1));
+            int maxMazeXY = Math.Max(_maze.Cells.GetLength(0), _maze.Cells.GetLength(1));
             int cellSize = minXY / maxMazeXY;
             int agentSize = (int)((minXY / maxMazeXY) * 0.9);
 
@@ -203,7 +203,7 @@ namespace MazeProject
             Graphics g = Graphics.FromImage(final);
 
             int minXY = Math.Min(pictureBox.Width, pictureBox.Height);
-            int maxMazeXY = Math.Max(_maze.GetLength(0), _maze.GetLength(1));
+            int maxMazeXY = Math.Max(_maze.Cells.GetLength(0), _maze.Cells.GetLength(1));
             int cellSize = minXY / maxMazeXY;
             int agentSize = (int)((minXY / maxMazeXY) * 0.9);
 

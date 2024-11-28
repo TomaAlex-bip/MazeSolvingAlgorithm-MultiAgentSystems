@@ -10,15 +10,15 @@ namespace MazeProject.Agents
         public int OldX { get; private set; }
         public int OldY { get; private set; }
 
-        private int[,] _maze;
+        private Maze _maze;
         private readonly Random _random;
 
-        public MazeAgent(int[,] maze, int startX, int startY, string name)
+        public MazeAgent(Maze maze, string name)
         {
-            X = startX;
-            Y = startY;
-            OldX = startX;
-            OldY = startY;
+            X = maze.StartX;
+            Y = maze.StartY;
+            OldX = X;
+            OldY = Y;
             _maze = maze;
             Name = name;
             _random = new Random();
@@ -71,7 +71,7 @@ namespace MazeProject.Agents
             if (Y - 1 < 0)
                 return false;
 
-            if (_maze[X, Y - 1] != (int)MazeCell.Path)
+            if (_maze.Cells[X, Y - 1].CellType != (int)MazeCell.Path)
                 return false;
 
             OldX = X;
@@ -82,9 +82,9 @@ namespace MazeProject.Agents
 
         private bool MoveDown()
         {
-            if (Y + 1 >= _maze.GetLength(0))
+            if (Y + 1 >= _maze.Cells.GetLength(0))
                 return false;
-            if (_maze[X, Y + 1] != (int)MazeCell.Path)
+            if (_maze.Cells[X, Y + 1].CellType != (int)MazeCell.Path)
                 return false;
 
             OldX = X;
@@ -95,9 +95,9 @@ namespace MazeProject.Agents
 
         private bool MoveRight()
         {
-            if (X + 1 >= _maze.GetLength(1))
+            if (X + 1 >= _maze.Cells.GetLength(1))
                 return false;
-            if (_maze[X + 1, Y] != (int)MazeCell.Path)
+            if (_maze.Cells[X + 1, Y].CellType != (int)MazeCell.Path)
                 return false;
 
             OldX = X;
@@ -110,7 +110,7 @@ namespace MazeProject.Agents
         {
             if (X - 1 < 0)
                 return false;
-            if (_maze[X - 1, Y] != (int)MazeCell.Path)
+            if (_maze.Cells[X - 1, Y].CellType != (int)MazeCell.Path)
                 return false;
 
             OldX = X;

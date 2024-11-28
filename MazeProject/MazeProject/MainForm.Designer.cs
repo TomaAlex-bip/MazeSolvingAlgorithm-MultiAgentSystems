@@ -49,18 +49,20 @@
             // 
             // pictureBox
             // 
-            pictureBox.Location = new Point(12, 93);
+            pictureBox.Location = new Point(14, 124);
+            pictureBox.Margin = new Padding(3, 4, 3, 4);
             pictureBox.Name = "pictureBox";
-            pictureBox.Size = new Size(560, 560);
+            pictureBox.Size = new Size(640, 747);
             pictureBox.TabIndex = 0;
             pictureBox.TabStop = false;
             pictureBox.Paint += pictureBox_Paint;
             // 
             // buttonStartSimulation
             // 
-            buttonStartSimulation.Location = new Point(12, 12);
+            buttonStartSimulation.Location = new Point(14, 16);
+            buttonStartSimulation.Margin = new Padding(3, 4, 3, 4);
             buttonStartSimulation.Name = "buttonStartSimulation";
-            buttonStartSimulation.Size = new Size(100, 23);
+            buttonStartSimulation.Size = new Size(114, 31);
             buttonStartSimulation.TabIndex = 1;
             buttonStartSimulation.Text = "Start Simulation";
             buttonStartSimulation.UseVisualStyleBackColor = true;
@@ -68,9 +70,10 @@
             // 
             // buttonGenerateMaze
             // 
-            buttonGenerateMaze.Location = new Point(12, 41);
+            buttonGenerateMaze.Location = new Point(14, 55);
+            buttonGenerateMaze.Margin = new Padding(3, 4, 3, 4);
             buttonGenerateMaze.Name = "buttonGenerateMaze";
-            buttonGenerateMaze.Size = new Size(100, 23);
+            buttonGenerateMaze.Size = new Size(114, 31);
             buttonGenerateMaze.TabIndex = 2;
             buttonGenerateMaze.Text = "Generate Maze";
             buttonGenerateMaze.UseVisualStyleBackColor = true;
@@ -78,79 +81,81 @@
             // 
             // numericMazeWidth
             // 
-            numericMazeWidth.Location = new Point(160, 43);
-            numericMazeWidth.Margin = new Padding(0, 3, 3, 3);
+            numericMazeWidth.Location = new Point(187, 56);
+            numericMazeWidth.Margin = new Padding(0, 4, 3, 4);
             numericMazeWidth.Name = "numericMazeWidth";
-            numericMazeWidth.Size = new Size(57, 23);
+            numericMazeWidth.Size = new Size(65, 27);
             numericMazeWidth.TabIndex = 3;
             numericMazeWidth.Value = new decimal(new int[] { 15, 0, 0, 0 });
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(118, 47);
+            label1.Location = new Point(135, 63);
             label1.Name = "label1";
-            label1.Size = new Size(39, 15);
+            label1.Size = new Size(49, 20);
             label1.TabIndex = 4;
             label1.Text = "Width";
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(223, 47);
+            label2.Location = new Point(255, 63);
             label2.Name = "label2";
-            label2.Size = new Size(43, 15);
+            label2.Size = new Size(54, 20);
             label2.TabIndex = 6;
             label2.Text = "Height";
             // 
             // numericMazeHeight
             // 
-            numericMazeHeight.Location = new Point(269, 43);
-            numericMazeHeight.Margin = new Padding(0, 3, 3, 3);
+            numericMazeHeight.Location = new Point(308, 58);
+            numericMazeHeight.Margin = new Padding(0, 4, 3, 4);
             numericMazeHeight.Name = "numericMazeHeight";
-            numericMazeHeight.Size = new Size(57, 23);
+            numericMazeHeight.Size = new Size(65, 27);
             numericMazeHeight.TabIndex = 5;
             numericMazeHeight.Value = new decimal(new int[] { 15, 0, 0, 0 });
             // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(224, 16);
+            label3.Location = new Point(256, 21);
             label3.Name = "label3";
-            label3.Size = new Size(105, 15);
+            label3.Size = new Size(131, 20);
             label3.TabIndex = 8;
             label3.Text = "Number of Agents";
             // 
             // numericNoAgents
             // 
-            numericNoAgents.Location = new Point(335, 14);
+            numericNoAgents.Location = new Point(393, 19);
+            numericNoAgents.Margin = new Padding(3, 4, 3, 4);
             numericNoAgents.Name = "numericNoAgents";
-            numericNoAgents.Size = new Size(57, 23);
+            numericNoAgents.Size = new Size(65, 27);
             numericNoAgents.TabIndex = 7;
             numericNoAgents.Value = new decimal(new int[] { 1, 0, 0, 0 });
             // 
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(332, 47);
+            label4.Location = new Point(379, 63);
             label4.Name = "label4";
-            label4.Size = new Size(63, 15);
+            label4.Size = new Size(82, 20);
             label4.TabIndex = 10;
             label4.Text = "Maze Seed";
             // 
             // numericMazeSeed
             // 
-            numericMazeSeed.Location = new Point(398, 43);
-            numericMazeSeed.Margin = new Padding(0, 3, 3, 3);
+            numericMazeSeed.Location = new Point(464, 57);
+            numericMazeSeed.Margin = new Padding(0, 4, 3, 4);
             numericMazeSeed.Name = "numericMazeSeed";
-            numericMazeSeed.Size = new Size(147, 23);
+            numericMazeSeed.Size = new Size(168, 27);
             numericMazeSeed.TabIndex = 9;
             // 
             // buttonStopSimulation
             // 
-            buttonStopSimulation.Location = new Point(118, 12);
+            buttonStopSimulation.Location = new Point(135, 16);
+            buttonStopSimulation.Margin = new Padding(3, 4, 3, 4);
             buttonStopSimulation.Name = "buttonStopSimulation";
-            buttonStopSimulation.Size = new Size(100, 23);
+            buttonStopSimulation.Size = new Size(114, 31);
             buttonStopSimulation.TabIndex = 11;
             buttonStopSimulation.Text = "Stop Simulation";
             buttonStopSimulation.UseVisualStyleBackColor = true;
@@ -158,9 +163,9 @@
             // 
             // MainForm
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(584, 665);
+            ClientSize = new Size(667, 887);
             Controls.Add(buttonStopSimulation);
             Controls.Add(label4);
             Controls.Add(numericMazeSeed);
@@ -173,6 +178,7 @@
             Controls.Add(buttonGenerateMaze);
             Controls.Add(buttonStartSimulation);
             Controls.Add(pictureBox);
+            Margin = new Padding(3, 4, 3, 4);
             Name = "MainForm";
             Text = "MainForm";
             ((System.ComponentModel.ISupportInitialize)pictureBox).EndInit();
