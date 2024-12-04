@@ -168,9 +168,54 @@ namespace MazeProject
                         case MazeCell.Exit:
                             g.FillRectangle(Brushes.LimeGreen, x * cellSize, y * cellSize, cellSize, cellSize);
                             break;
+                        case MazeCell.Path:
+                            Color c = GetPathColor(maze, x, y);
+                            g.FillRectangle(new SolidBrush(c), x * cellSize, y * cellSize, cellSize, cellSize);
+                            break;
+
                     }
                 }
             }
+        }
+
+        private Color GetPathColor(Maze maze, int x, int y)
+        {
+            int maxColor = 200;
+            float w = 0f;
+            int c = 0;
+            if (maze.Cells[x, y+1].UpWeight != null)
+            {
+                w += (float)maze.Cells[x, y+1].UpWeight!;
+                c++;
+            }
+            if (maze.Cells[x, y-1].DownWeight != null)
+            {
+                w += (float)maze.Cells[x, y-1].DownWeight!;
+                c++;
+            }
+            if (maze.Cells[x+1, y].LeftWeight != null)
+            {
+                w += (float)maze.Cells[x+1, y].LeftWeight!;
+                c++;
+            }
+            if (maze.Cells[x-1, y].RightWeight != null)
+            {
+                w += (float)maze.Cells[x-1, y].RightWeight!;
+                c++;
+            }
+            if (c > 0)
+                w /= c;
+
+            if (w < 0.5)
+            {
+                return Color.FromArgb(255, 255-(int)(maxColor * w), 255 - (int)(maxColor * w));
+            }
+            else if (w > 0.5)
+            {
+                return Color.FromArgb(255 - (int)(maxColor * w), 255, 255 - (int)(maxColor * w));
+            }
+
+            return Color.White;
         }
 
         private void DrawAgents(Graphics g)

@@ -127,6 +127,26 @@
             maze.StartX = startX;
             maze.StartY = startY;
 
+
+            for (int i = 0; i < actualWidth; i++)
+                for (int j = 0; j < actualHeight; j++)
+                {
+                    if (maze.Cells[i, j].CellType != MazeCell.Path)
+                        continue;
+
+                    if (maze.Cells[i, j - 1].CellType == MazeCell.Path)
+                        maze.Cells[i, j].UpWeight = 0.5f;
+
+                    if (maze.Cells[i, j + 1].CellType == MazeCell.Path)
+                        maze.Cells[i, j].DownWeight = 0.5f;
+
+                    if (maze.Cells[i - 1, j].CellType == MazeCell.Path)
+                        maze.Cells[i, j].LeftWeight = 0.5f;
+
+                    if (maze.Cells[i + 1, j].CellType == MazeCell.Path)
+                        maze.Cells[i, j].RightWeight = 0.5f;
+                }
+
             return maze;
         }
 
