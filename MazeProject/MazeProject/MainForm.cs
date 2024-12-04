@@ -11,6 +11,11 @@ namespace MazeProject
         private List<MazeAgent> _agents = new();
         private MazeEnvironment? _environment;
         private Thread? _simulationThread;
+        private int _noTurns = 0;
+        private DateTime _startTime;
+        private DateTime _endTime;
+        private TimeSpan _elapsedTime;
+        private bool _updatesEnabled = true;
 
         public MainForm()
         {
@@ -82,23 +87,46 @@ namespace MazeProject
                 var confirmResult = MessageBox.Show("A simulation is still in progress, abort?", "Confirm", MessageBoxButtons.YesNo);
                 if (confirmResult == DialogResult.Yes)
                 {
-                    StopSimulation();
-                    StartSimulation(noAgents, _maze);
+                    try
+                    {
+                        StopSimulation();
+                        StartSimulation(noAgents, _maze);
+                    }
+                    catch (Exception ex) 
+                    {
+                        MessageBox.Show($"Could not start simulation.\r\n{ex.Message}", "Error");
+                    }
                 }
             }
             else
             {
-                StartSimulation(noAgents, _maze);
+                try
+                {
+                    StartSimulation(noAgents, _maze);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Could not start simulation.\r\n{ex.Message}", "Error");
+                }
             }
         }
 
         private void buttonStopSimulation_Click(object sender, EventArgs e)
         {
-            StopSimulation();
+            try
+            {
+                StopSimulation();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Could not stop simulation.\r\n{ex.Message}", "Error");
+            }
         }
 
-        private void Agent_OnMoveEvent()
+        private void Environment_OnAgentMoveEvent()
         {
+            HandleTimeElapsed();
+
             if (_agentsImage != null)
             {
                 _agentsImage.Dispose();
@@ -111,6 +139,27 @@ namespace MazeProject
             this.Invoke(() =>
             {
                 pictureBox.Refresh();
+            });
+        }
+
+        private void Agent_OnFoundExitEvent(MazeAgent agent)
+        {
+            StopSimulation();
+            MessageBox.Show($"Agent {agent.Name} found the exit in {_noTurns} turns / {_elapsedTime.ToString("mm\\:ss")} minutes", "Info");
+        }
+
+        private void HandleTimeElapsed()
+        {
+            if (!_updatesEnabled)
+                return;
+
+            _noTurns++;
+            _elapsedTime = DateTime.Now - _startTime;
+
+            this.Invoke(() =>
+            {
+                labelTurnsToFindExit.Text = _noTurns.ToString();
+                labelTimeToFindExit.Text = _elapsedTime.ToString("mm\\:ss");
             });
         }
 
@@ -128,14 +177,22 @@ namespace MazeProject
                 var agent = new MazeAgent(maze, $"agent_{i}");
                 _environment.Add(agent);
                 _agents.Add(agent);
+                agent.OnFoundExitEvent += Agent_OnFoundExitEvent;
             }
-            _environment.OnAgentMoveEvent += Agent_OnMoveEvent;
+            _environment.OnAgentMoveEvent += Environment_OnAgentMoveEvent; ;
 
             _simulationThread = new Thread(() =>
             {
-                _environment.Start();
+                try
+                {
+                    _environment.Start();
+                }
+                catch (Exception) { }
             });
             _simulationThread.Start();
+            _noTurns = 0;
+            _updatesEnabled = true;
+            _startTime = DateTime.Now;
         }
 
         private void StopSimulation()
@@ -147,6 +204,10 @@ namespace MazeProject
                 _environment.Remove(agent);
 
             _environment = null;
+            _endTime = DateTime.Now;
+            _elapsedTime = _endTime - _startTime;
+            HandleTimeElapsed();
+            _updatesEnabled = false;
         }
 
         private void DrawMaze(Graphics g, Maze maze)
@@ -292,9 +353,6 @@ namespace MazeProject
                     pbg.DrawImage(final, 0, 0);
                 }
             }
-
-
-
         }
     }
 }

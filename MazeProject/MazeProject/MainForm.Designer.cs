@@ -194,9 +194,9 @@
             labelTurnsToFindExit.Location = new Point(117, 88);
             labelTurnsToFindExit.Margin = new Padding(3);
             labelTurnsToFindExit.Name = "labelTurnsToFindExit";
-            labelTurnsToFindExit.Size = new Size(28, 15);
+            labelTurnsToFindExit.Size = new Size(10, 15);
             labelTurnsToFindExit.TabIndex = 15;
-            labelTurnsToFindExit.Text = "123";
+            labelTurnsToFindExit.Text = " ";
             // 
             // labelTimeToFindExit
             // 
@@ -205,9 +205,9 @@
             labelTimeToFindExit.Location = new Point(315, 88);
             labelTimeToFindExit.Margin = new Padding(3);
             labelTimeToFindExit.Name = "labelTimeToFindExit";
-            labelTimeToFindExit.Size = new Size(38, 15);
+            labelTimeToFindExit.Size = new Size(10, 15);
             labelTimeToFindExit.TabIndex = 16;
-            labelTimeToFindExit.Text = "01:34";
+            labelTimeToFindExit.Text = " ";
             // 
             // label8
             // 

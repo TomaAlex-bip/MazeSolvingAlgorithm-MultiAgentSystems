@@ -5,6 +5,9 @@ namespace MazeProject.Agents
 {
     public class MazeAgent : Agent
     {
+        public delegate void HandleFoundExit(MazeAgent agent);
+        public event HandleFoundExit? OnFoundExitEvent;
+
         public int X { get; private set; }
         public int Y { get; private set; }
         public int OldX { get; private set; }
@@ -41,6 +44,8 @@ namespace MazeProject.Agents
 
         private void MoveRandomly()
         {
+            VerifyIfFinishIsReachable();
+
             bool hasMoved = false;
             while (!hasMoved)
             {
@@ -63,6 +68,29 @@ namespace MazeProject.Agents
                         hasMoved = MoveLeft();
                         break;
                 }
+            }
+        }
+
+        private void VerifyIfFinishIsReachable()
+        {
+            if (X < 1 || Y < 1 || X >= _maze.Width - 1 || Y >= _maze.Height - 1)
+                return;
+
+            if (_maze.Cells[X + 1, Y].CellType == MazeCell.Exit)
+            {
+                OnFoundExitEvent?.Invoke(this);
+            }
+            if (_maze.Cells[X - 1, Y].CellType == MazeCell.Exit)
+            {
+                OnFoundExitEvent?.Invoke(this);
+            }
+            if (_maze.Cells[X, Y + 1].CellType == MazeCell.Exit)
+            {
+                OnFoundExitEvent?.Invoke(this);
+            }
+            if (_maze.Cells[X, Y - 1].CellType == MazeCell.Exit)
+            {
+                OnFoundExitEvent?.Invoke(this);
             }
         }
 
