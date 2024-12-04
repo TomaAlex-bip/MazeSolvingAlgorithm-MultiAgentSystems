@@ -8,8 +8,6 @@ namespace MazeProject
         private Bitmap? _mazeImage;
         private Bitmap? _agentsImage;
         private Maze? _maze;
-        private int _startX, _startY;
-
         private List<MazeAgent> _agents = new();
         private MazeEnvironment? _environment;
         private Thread? _simulationThread;
@@ -118,7 +116,11 @@ namespace MazeProject
 
         private void StartSimulation(int noAgents, Maze maze)
         {
-            _environment = new(0, 1000);
+            var turnTime = (int)numericTurnTime.Value;   
+            if (turnTime < 0)
+                turnTime = 0;
+
+            _environment = new(0, turnTime);
             _agents.Clear();
             for (int i = 0; i < noAgents; i++)
             {
@@ -238,6 +240,9 @@ namespace MazeProject
 
         private void AnimateAgent(MazeAgent agent)
         {
+            if (!checkBoxAnimations.Checked)
+                return;
+
             if (_maze == null)
                 return;
 
