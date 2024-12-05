@@ -131,26 +131,28 @@
             for (int i = 0; i < actualWidth; i++)
                 for (int j = 0; j < actualHeight; j++)
                 {
-                    if (maze.Cells[i, j].CellType != MazeCell.Path)
+                    if (maze.Cells[i, j].CellType == MazeCell.Wall)
                         continue;
 
-                    if (maze.Cells[i, j - 1].CellType == MazeCell.Path)
-                        maze.Cells[i, j].UpWeight = 0.5f;
+                    if (j - 1 > 0)
+                        if (maze.Cells[i, j - 1].CellType == MazeCell.Path)
+                            maze.Cells[i, j].UpWeight = 0.5f;
 
-                    if (maze.Cells[i, j + 1].CellType == MazeCell.Path)
-                        maze.Cells[i, j].DownWeight = 0.5f;
+                    if (j + 1 < maze.Height)
+                        if (maze.Cells[i, j + 1].CellType == MazeCell.Path)
+                            maze.Cells[i, j].DownWeight = 0.5f;
 
-                    if (maze.Cells[i - 1, j].CellType == MazeCell.Path)
-                        maze.Cells[i, j].LeftWeight = 0.5f;
+                    if (i - 1 > 0)
+                        if (maze.Cells[i - 1, j].CellType == MazeCell.Path)
+                            maze.Cells[i, j].LeftWeight = 0.5f;
 
-                    if (maze.Cells[i + 1, j].CellType == MazeCell.Path)
-                        maze.Cells[i, j].RightWeight = 0.5f;
+                    if (i + 1 < maze.Width)
+                        if (maze.Cells[i + 1, j].CellType == MazeCell.Path)
+                            maze.Cells[i, j].RightWeight = 0.5f;
                 }
 
             return maze;
         }
-
-
     }
 
     public enum MazeCell

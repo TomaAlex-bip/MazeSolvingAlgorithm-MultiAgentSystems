@@ -1,4 +1,5 @@
 ﻿using ActressMas;
+using MazeProject.Data;
 using MazeProject.Utils;
 
 namespace MazeProject.Agents
@@ -6,14 +7,16 @@ namespace MazeProject.Agents
     public class MazeAgent : Agent
     {
         public delegate void HandleFoundExit(MazeAgent agent);
+        public delegate void HandleAgentMove(MoveData moveData);
         public event HandleFoundExit? OnFoundExitEvent;
+        public event HandleAgentMove? OnAgentMoveEvent;
 
         public int X { get; private set; }
         public int Y { get; private set; }
         public int OldX { get; private set; }
         public int OldY { get; private set; }
 
-        private Maze _maze;
+        private readonly Maze _maze;
         private readonly Random _random;
 
         public MazeAgent(Maze maze, string name)
@@ -22,8 +25,8 @@ namespace MazeProject.Agents
             Y = maze.StartY;
             OldX = X;
             OldY = Y;
-            _maze = maze;
             Name = name;
+            _maze = new(maze);
             _random = new Random();
         }
 
@@ -34,10 +37,13 @@ namespace MazeProject.Agents
 
         public override void Act(ActressMas.Message message)
         {
-
+            if (message.ContentObj is MoveData moveData)
+            {
+                _maze.UpdateMazeWeight(moveData.X, moveData.Y, moveData.OldX, moveData.OldY, moveData.WeightChange);
+            }
         }
 
-        public override void ActDefault()
+        public void Move()
         {
             MoveRandomly();
         }
@@ -69,6 +75,10 @@ namespace MazeProject.Agents
                         break;
                 }
             }
+
+            MoveData moveData = new(X, Y, OldX, OldY, -0.1f);
+            Broadcast(moveData);
+            OnAgentMoveEvent?.Invoke(moveData);
         }
 
         private void VerifyIfFinishIsReachable()
@@ -146,5 +156,7 @@ namespace MazeProject.Agents
             X--;
             return true;
         }
+
+        
     }
 }

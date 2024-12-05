@@ -47,6 +47,7 @@
             label8 = new Label();
             numericTurnTime = new NumericUpDown();
             checkBoxAnimations = new CheckBox();
+            checkBoxMazeWeights = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericMazeWidth).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericMazeHeight).BeginInit();
@@ -241,11 +242,25 @@
             checkBoxAnimations.Text = "Animations";
             checkBoxAnimations.UseVisualStyleBackColor = true;
             // 
+            // checkBoxMazeWeights
+            // 
+            checkBoxMazeWeights.AutoSize = true;
+            checkBoxMazeWeights.Checked = true;
+            checkBoxMazeWeights.CheckState = CheckState.Checked;
+            checkBoxMazeWeights.Location = new Point(562, 46);
+            checkBoxMazeWeights.Name = "checkBoxMazeWeights";
+            checkBoxMazeWeights.Size = new Size(97, 19);
+            checkBoxMazeWeights.TabIndex = 21;
+            checkBoxMazeWeights.Text = "View Weights";
+            checkBoxMazeWeights.UseVisualStyleBackColor = true;
+            checkBoxMazeWeights.CheckedChanged += checkBoxMazeWeights_CheckedChanged;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(664, 741);
+            Controls.Add(checkBoxMazeWeights);
             Controls.Add(checkBoxAnimations);
             Controls.Add(label8);
             Controls.Add(numericTurnTime);
@@ -298,5 +313,6 @@
         private Label label8;
         private NumericUpDown numericTurnTime;
         private CheckBox checkBoxAnimations;
+        private CheckBox checkBoxMazeWeights;
     }
 }

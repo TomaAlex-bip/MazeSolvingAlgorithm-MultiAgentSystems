@@ -1,4 +1,5 @@
 using MazeProject.Agents;
+using MazeProject.Data;
 using MazeProject.Utils;
 
 namespace MazeProject
@@ -59,11 +60,8 @@ namespace MazeProject
             _maze = MazeGenerator.GenerateMaze(mazeWidth, mazeHeight, mazeSeed);
 
             _mazeImage = new Bitmap(pictureBox.Width, pictureBox.Height);
-
             Graphics g = Graphics.FromImage(_mazeImage);
-
             DrawMaze(g, _maze);
-
             pictureBox.Refresh();
         }
 
@@ -90,9 +88,9 @@ namespace MazeProject
                     try
                     {
                         StopSimulation();
-                        StartSimulation(noAgents, _maze);
+                        StartSimulation(noAgents);
                     }
-                    catch (Exception ex) 
+                    catch (Exception ex)
                     {
                         MessageBox.Show($"Could not start simulation.\r\n{ex.Message}", "Error");
                     }
@@ -102,7 +100,7 @@ namespace MazeProject
             {
                 try
                 {
-                    StartSimulation(noAgents, _maze);
+                    StartSimulation(noAgents);
                 }
                 catch (Exception ex)
                 {
@@ -148,6 +146,26 @@ namespace MazeProject
             MessageBox.Show($"Agent {agent.Name} found the exit in {_noTurns} turns / {_elapsedTime.ToString("mm\\:ss")} minutes", "Info");
         }
 
+        private void Agent_OnAgentMoveEvent(MoveData moveData)
+        {
+            _maze?.UpdateMazeWeight(moveData.X, moveData.Y, moveData.OldX, moveData.OldY, moveData.WeightChange);
+
+            if (checkBoxMazeWeights.Checked)
+            {
+                this.Invoke(() =>
+                {
+                    if (_mazeImage == null)
+                        return;
+                    if (_maze == null)
+                        return;
+
+                    Graphics g = Graphics.FromImage(_mazeImage);
+                    DrawMaze(g, _maze);
+                    pictureBox.Refresh();
+                });
+            }
+        }
+
         private void HandleTimeElapsed()
         {
             if (!_updatesEnabled)
@@ -163,21 +181,28 @@ namespace MazeProject
             });
         }
 
-        private void StartSimulation(int noAgents, Maze maze)
+        private void StartSimulation(int noAgents)
         {
-            var turnTime = (int)numericTurnTime.Value;   
+            var turnTime = (int)numericTurnTime.Value;
             if (turnTime < 0)
                 turnTime = 0;
+
+            if (_maze == null)
+                return;
+
+            _maze.ResetMazeWeights();
 
             _environment = new(0, turnTime);
             _agents.Clear();
             for (int i = 0; i < noAgents; i++)
             {
                 // create agents and add them to the environment
-                var agent = new MazeAgent(maze, $"agent_{i}");
+                var agent = new MazeAgent(_maze, $"agent_{i}");
                 _environment.Add(agent);
                 _agents.Add(agent);
                 agent.OnFoundExitEvent += Agent_OnFoundExitEvent;
+                agent.OnAgentMoveEvent += Agent_OnAgentMoveEvent;
+                _environment.OnAgentMoveEvent += agent.Move;
             }
             _environment.OnAgentMoveEvent += Environment_OnAgentMoveEvent; ;
 
@@ -210,7 +235,7 @@ namespace MazeProject
             _updatesEnabled = false;
         }
 
-        private void DrawMaze(Graphics g, Maze maze)
+        private void DrawMaze(Graphics g, Maze maze, bool useWeights = true)
         {
             int minXY = Math.Min(pictureBox.Width, pictureBox.Height);
             int maxMazeXY = Math.Max(maze.Cells.GetLength(0), maze.Cells.GetLength(1));
@@ -232,10 +257,14 @@ namespace MazeProject
                             g.FillRectangle(Brushes.LimeGreen, x * cellSize, y * cellSize, cellSize, cellSize);
                             break;
                         case MazeCell.Path:
+                            if (!useWeights)
+                            {
+                                g.FillRectangle(Brushes.White, x * cellSize, y * cellSize, cellSize, cellSize);
+                                break;
+                            }
                             Color c = GetPathColor(maze, x, y);
                             g.FillRectangle(new SolidBrush(c), x * cellSize, y * cellSize, cellSize, cellSize);
                             break;
-
                     }
                 }
             }
@@ -243,27 +272,28 @@ namespace MazeProject
 
         private Color GetPathColor(Maze maze, int x, int y)
         {
-            int maxColor = 200;
+            int maxColor = 250;
+            int minColor = 50;
             float w = 0f;
             int c = 0;
-            if (maze.Cells[x, y+1].UpWeight != null)
+            if (maze.Cells[x, y + 1].UpWeight != null)
             {
-                w += (float)maze.Cells[x, y+1].UpWeight!;
+                w += (float)maze.Cells[x, y + 1].UpWeight!;
                 c++;
             }
-            if (maze.Cells[x, y-1].DownWeight != null)
+            if (maze.Cells[x, y - 1].DownWeight != null)
             {
-                w += (float)maze.Cells[x, y-1].DownWeight!;
+                w += (float)maze.Cells[x, y - 1].DownWeight!;
                 c++;
             }
-            if (maze.Cells[x+1, y].LeftWeight != null)
+            if (maze.Cells[x + 1, y].LeftWeight != null)
             {
-                w += (float)maze.Cells[x+1, y].LeftWeight!;
+                w += (float)maze.Cells[x + 1, y].LeftWeight!;
                 c++;
             }
-            if (maze.Cells[x-1, y].RightWeight != null)
+            if (maze.Cells[x - 1, y].RightWeight != null)
             {
-                w += (float)maze.Cells[x-1, y].RightWeight!;
+                w += (float)maze.Cells[x - 1, y].RightWeight!;
                 c++;
             }
             if (c > 0)
@@ -271,11 +301,13 @@ namespace MazeProject
 
             if (w < 0.5)
             {
-                return Color.FromArgb(255, 255-(int)(maxColor * w), 255 - (int)(maxColor * w));
+                int colorValue = minColor + (int)(maxColor * w);
+                return Color.FromArgb(255, colorValue, colorValue);
             }
             else if (w > 0.5)
             {
-                return Color.FromArgb(255 - (int)(maxColor * w), 255, 255 - (int)(maxColor * w));
+                int colorValue = (int)(maxColor * (w - 0.5));
+                return Color.FromArgb(colorValue, 255, colorValue);
             }
 
             return Color.White;
@@ -353,6 +385,22 @@ namespace MazeProject
                     pbg.DrawImage(final, 0, 0);
                 }
             }
+        }
+
+        private void checkBoxMazeWeights_CheckedChanged(object sender, EventArgs e)
+        {
+            this.Invoke(() =>
+            {
+                if (_maze == null)
+                    return;
+
+                if (_mazeImage == null)
+                    return;
+
+                Graphics g = Graphics.FromImage(_mazeImage);
+                DrawMaze(g, _maze, false);
+                pictureBox.Refresh();
+            });
         }
     }
 }
