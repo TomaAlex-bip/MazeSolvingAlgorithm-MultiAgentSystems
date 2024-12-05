@@ -43,14 +43,16 @@ namespace MazeProject.Agents
             }
         }
 
-        public void Move()
+        public void MakeTurn()
         {
             MoveRandomly();
         }
 
         private void MoveRandomly()
         {
-            VerifyIfFinishIsReachable();
+            var status = VerifyIfFinishIsReachable();
+            if (status)
+                return;
 
             bool hasMoved = false;
             while (!hasMoved)
@@ -81,27 +83,33 @@ namespace MazeProject.Agents
             OnAgentMoveEvent?.Invoke(moveData);
         }
 
-        private void VerifyIfFinishIsReachable()
+        private bool VerifyIfFinishIsReachable()
         {
             if (X < 1 || Y < 1 || X >= _maze.Width - 1 || Y >= _maze.Height - 1)
-                return;
+                return false;
 
             if (_maze.Cells[X + 1, Y].CellType == MazeCell.Exit)
             {
                 OnFoundExitEvent?.Invoke(this);
+                return true;
             }
             if (_maze.Cells[X - 1, Y].CellType == MazeCell.Exit)
             {
                 OnFoundExitEvent?.Invoke(this);
+                return true;
             }
             if (_maze.Cells[X, Y + 1].CellType == MazeCell.Exit)
             {
                 OnFoundExitEvent?.Invoke(this);
+                return true;
             }
             if (_maze.Cells[X, Y - 1].CellType == MazeCell.Exit)
             {
                 OnFoundExitEvent?.Invoke(this);
+                return true;
             }
+
+            return false;
         }
 
         private bool MoveUp()

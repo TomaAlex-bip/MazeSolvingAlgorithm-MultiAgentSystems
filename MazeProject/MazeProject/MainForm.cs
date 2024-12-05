@@ -202,7 +202,7 @@ namespace MazeProject
                 _agents.Add(agent);
                 agent.OnFoundExitEvent += Agent_OnFoundExitEvent;
                 agent.OnAgentMoveEvent += Agent_OnAgentMoveEvent;
-                _environment.OnAgentMoveEvent += agent.Move;
+                _environment.OnAgentMoveEvent += agent.MakeTurn;
             }
             _environment.OnAgentMoveEvent += Environment_OnAgentMoveEvent; ;
 
