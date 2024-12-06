@@ -67,10 +67,13 @@ namespace MazeProject.Agents
 
             Move();
 
-            var w = -0.1f;
             if (_isInDeadEnd)
-                w = -1f;
-            MoveData moveData = new(X, Y, OldX, OldY, w);
+            {
+                MoveData moveDataDeadEnd = new(OldX, OldY, X, Y, -1f);
+                Broadcast(moveDataDeadEnd, true);
+                OnAgentMoveEvent?.Invoke(moveDataDeadEnd);
+            }
+            MoveData moveData = new(X, Y, OldX, OldY, -0.1f);
             Broadcast(moveData, true);
             OnAgentMoveEvent?.Invoke(moveData);
         }
