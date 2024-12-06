@@ -17,10 +17,11 @@
             if (actualHeight % 2 == 0)
                 actualHeight++;
 
-            Maze maze = new(actualWidth, actualHeight, seed);
-            Random random = new(seed);
             if (seed == 0)
-                random = new();
+                seed = new Random().Next();
+            Random random = new(seed);
+            Maze maze = new(actualWidth, actualHeight, seed);
+            
             List<int[]> frontierCells = new();
 
             // initialize the maze with walls

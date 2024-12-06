@@ -48,12 +48,15 @@
             numericTurnTime = new NumericUpDown();
             checkBoxAnimations = new CheckBox();
             checkBoxMazeWeights = new CheckBox();
+            numericNoSimulations = new NumericUpDown();
+            buttonStartMultipleSimulations = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericMazeWidth).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericMazeHeight).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericNoAgents).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericMazeSeed).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericTurnTime).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericNoSimulations).BeginInit();
             SuspendLayout();
             // 
             // pictureBox
@@ -215,7 +218,7 @@
             label8.AutoSize = true;
             label8.Location = new Point(391, 18);
             label8.Name = "label8";
-            label8.Size = new Size(89, 15);
+            label8.Size = new Size(87, 15);
             label8.TabIndex = 19;
             label8.Text = "Turn Time (ms)";
             // 
@@ -255,11 +258,34 @@
             checkBoxMazeWeights.UseVisualStyleBackColor = true;
             checkBoxMazeWeights.CheckedChanged += checkBoxMazeWeights_CheckedChanged;
             // 
+            // numericNoSimulations
+            // 
+            numericNoSimulations.Increment = new decimal(new int[] { 10, 0, 0, 0 });
+            numericNoSimulations.Location = new Point(595, 80);
+            numericNoSimulations.Margin = new Padding(0, 3, 3, 3);
+            numericNoSimulations.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
+            numericNoSimulations.Name = "numericNoSimulations";
+            numericNoSimulations.Size = new Size(54, 23);
+            numericNoSimulations.TabIndex = 22;
+            numericNoSimulations.Value = new decimal(new int[] { 10, 0, 0, 0 });
+            // 
+            // buttonStartMultipleSimulations
+            // 
+            buttonStartMultipleSimulations.Location = new Point(425, 80);
+            buttonStartMultipleSimulations.Name = "buttonStartMultipleSimulations";
+            buttonStartMultipleSimulations.Size = new Size(158, 23);
+            buttonStartMultipleSimulations.TabIndex = 23;
+            buttonStartMultipleSimulations.Text = "Start Multiple Simulations";
+            buttonStartMultipleSimulations.UseVisualStyleBackColor = true;
+            buttonStartMultipleSimulations.Click += buttonStartMultipleSimulations_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(664, 741);
+            Controls.Add(buttonStartMultipleSimulations);
+            Controls.Add(numericNoSimulations);
             Controls.Add(checkBoxMazeWeights);
             Controls.Add(checkBoxAnimations);
             Controls.Add(label8);
@@ -288,6 +314,7 @@
             ((System.ComponentModel.ISupportInitialize)numericNoAgents).EndInit();
             ((System.ComponentModel.ISupportInitialize)numericMazeSeed).EndInit();
             ((System.ComponentModel.ISupportInitialize)numericTurnTime).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericNoSimulations).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -314,5 +341,7 @@
         private NumericUpDown numericTurnTime;
         private CheckBox checkBoxAnimations;
         private CheckBox checkBoxMazeWeights;
+        private NumericUpDown numericNoSimulations;
+        private Button buttonStartMultipleSimulations;
     }
 }

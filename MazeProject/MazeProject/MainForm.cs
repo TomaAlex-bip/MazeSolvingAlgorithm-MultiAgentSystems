@@ -1,6 +1,7 @@
 using MazeProject.Agents;
 using MazeProject.Data;
 using MazeProject.Utils;
+using System.Text;
 
 namespace MazeProject
 {
@@ -64,6 +65,22 @@ namespace MazeProject
             DrawMaze(g, _maze);
             pictureBox.Refresh();
         }
+        
+        private void checkBoxMazeWeights_CheckedChanged(object sender, EventArgs e)
+        {
+            this.Invoke(() =>
+            {
+                if (_maze == null)
+                    return;
+
+                if (_mazeImage == null)
+                    return;
+
+                Graphics g = Graphics.FromImage(_mazeImage);
+                DrawMaze(g, _maze, false);
+                pictureBox.Refresh();
+            });
+        }
 
         private void buttonStartSimulation_Click(object sender, EventArgs e)
         {
@@ -118,6 +135,85 @@ namespace MazeProject
             catch (Exception ex)
             {
                 MessageBox.Show($"Could not stop simulation.\r\n{ex.Message}", "Error");
+            }
+        }
+
+        private async void buttonStartMultipleSimulations_Click(object sender, EventArgs e)
+        {
+            if (_maze == null)
+            {
+                MessageBox.Show("Generate a maze first!");
+                return;
+            }
+
+            int noAgents = (int)numericNoAgents.Value;
+            if (noAgents <= 0)
+            {
+                MessageBox.Show("At least one agent is needed!");
+                return;
+            }
+
+            int noSimulations = (int)numericNoSimulations.Value;
+            if (noSimulations <= 0)
+            {
+                MessageBox.Show("At least one simulation round is needed!");
+                return;
+            }
+
+            if (_environment != null)
+            {
+                var confirmResult = MessageBox.Show("A simulation is still in progress, abort?", "Confirm", MessageBoxButtons.YesNo);
+                if (confirmResult == DialogResult.Yes)
+                {
+                    try
+                    {
+                        StopSimulation();
+                        var simulationResults = await StartSimulation(noAgents, noSimulations);
+                        ShowAndSaveSimulationResults(simulationResults);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Could not start simulation.\r\n{ex.Message}", "Error");
+                    }
+                }
+            }
+            else
+            {
+                try
+                {
+                    var simulationResults = await StartSimulation(noAgents, noSimulations);
+                    ShowAndSaveSimulationResults(simulationResults);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Could not start simulation.\r\n{ex.Message}", "Error");
+                }
+            }
+        }
+
+        private void ShowAndSaveSimulationResults(List<SimulationResults> simulationResults)
+        {
+            StringBuilder sb = new();
+            var avgTurns = 0;
+            foreach (var simulationresult in simulationResults)
+            {
+                sb.AppendLine(simulationresult.ToString());
+                avgTurns += simulationresult.NoTurns;
+            }
+            avgTurns /= simulationResults.Count;
+            sb.AppendLine($"\nAverage turns to find exit: {avgTurns}");
+
+            var status = MessageBox.Show($"{sb}\r\n\r\n\tSave results?", "Simulation finished", MessageBoxButtons.YesNo);
+            if (status != DialogResult.Yes)
+                return;
+
+            using var sfd = new SaveFileDialog();
+            sfd.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            sfd.FilterIndex = 1;
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                File.WriteAllText(sfd.FileName, sb.ToString());
             }
         }
 
@@ -218,6 +314,62 @@ namespace MazeProject
             _noTurns = 0;
             _updatesEnabled = true;
             _startTime = DateTime.Now;
+        }
+
+        private async Task<List<SimulationResults>> StartSimulation(int noAgents, int noSimulations)
+        {
+            List<SimulationResults> simulationResults = new();
+
+            if (_maze == null)
+                throw new Exception("maze not generated");
+
+            for (int simulationTurn = 0; simulationTurn < noSimulations; simulationTurn++)
+            {
+                _maze.ResetMazeWeights();
+                _noTurns = 0;
+                _environment = new();
+                _agents.Clear();
+                for (int i = 0; i < noAgents; i++)
+                {
+                    // create agents and add them to the environment
+                    var agent = new MazeAgent(_maze, $"agent_{i}");
+                    _environment.Add(agent);
+                    _agents.Add(agent);
+                    agent.OnFoundExitEvent += (MazeAgent _) => { StopSimulation(); };
+                    agent.OnAgentMoveEvent += Agent_OnAgentMoveEvent;
+                    _environment.OnAgentMoveEvent += agent.MakeTurn;
+                }
+                _environment.OnAgentMoveEvent += Environment_OnAgentMoveEvent; ;
+
+                _simulationThread = new Thread(() =>
+                {
+                    try
+                    {
+                        _environment.Start();
+                    }
+                    catch (Exception) { }
+                });
+                _simulationThread.Start();
+                _updatesEnabled = true;
+                _startTime = DateTime.Now;
+
+                await Task.Run(() => 
+                {
+                    _simulationThread.Join();
+                });
+
+                simulationResults.Add(new()
+                {
+                    SimulationId = simulationTurn,
+                    NoAgents = noAgents,
+                    MazeHeight = _maze.Height,
+                    MazeWidth = _maze.Width,
+                    MazeSeed = _maze.Seed,
+                    NoTurns = _noTurns
+                });
+            }
+
+            return simulationResults;
         }
 
         private void StopSimulation()
@@ -448,22 +600,6 @@ namespace MazeProject
                     pbg.DrawImage(final, 0, 0);
                 }
             }
-        }
-
-        private void checkBoxMazeWeights_CheckedChanged(object sender, EventArgs e)
-        {
-            this.Invoke(() =>
-            {
-                if (_maze == null)
-                    return;
-
-                if (_mazeImage == null)
-                    return;
-
-                Graphics g = Graphics.FromImage(_mazeImage);
-                DrawMaze(g, _maze, false);
-                pictureBox.Refresh();
-            });
         }
     }
 }
