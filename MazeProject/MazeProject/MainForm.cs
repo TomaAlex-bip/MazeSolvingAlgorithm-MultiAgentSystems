@@ -283,24 +283,24 @@ namespace MazeProject
             int maxColor = 250;
             int minColor = 50;
 
-            if (maze.Cells[x, y + 1].UpWeight != null)
+            if (maze.Cells[x, y].UpWeight != null)
             {
-                var w = (float)maze.Cells[x, y + 1].UpWeight!;
+                var w = (float)maze.Cells[x, y].UpWeight!;
                 topColor = GetColorFromWeight(w, minColor, maxColor);
             }
-            if (maze.Cells[x, y - 1].DownWeight != null)
+            if (maze.Cells[x, y].DownWeight != null)
             {
-                var w = (float)maze.Cells[x, y - 1].DownWeight!;
+                var w = (float)maze.Cells[x, y].DownWeight!;
                 bottomColor = GetColorFromWeight(w, minColor, maxColor);
             }
-            if (maze.Cells[x + 1, y].LeftWeight != null)
+            if (maze.Cells[x, y].LeftWeight != null)
             {
-                var w = (float)maze.Cells[x + 1, y].LeftWeight!;
+                var w = (float)maze.Cells[x, y].LeftWeight!;
                 leftColor = GetColorFromWeight(w, minColor, maxColor);
             }
-            if (maze.Cells[x - 1, y].RightWeight != null)
+            if (maze.Cells[x, y].RightWeight != null)
             {
-                var w = (float)maze.Cells[x - 1, y].RightWeight!;
+                var w = (float)maze.Cells[x, y].RightWeight!;
                 rightColor = GetColorFromWeight(w, minColor, maxColor);
             }
 
@@ -308,6 +308,8 @@ namespace MazeProject
             g.FillPolygon(new SolidBrush(bottomColor), new Point[] { bottomLeft, center, bottomRight }); // bottom triangle
             g.FillPolygon(new SolidBrush(leftColor), new Point[] { topLeft, center, bottomLeft }); // left triangle
             g.FillPolygon(new SolidBrush(rightColor), new Point[] { topRight, center, bottomRight }); // right triangle
+            g.FillRectangle(Brushes.White, x * cellSize + cellSize / 4, y * cellSize + cellSize / 4,
+                cellSize / 2 + 1, cellSize / 2 + 1); // fill half center
         }
 
         private void DrawPathWithWeightsOld(Graphics g, Maze maze, int x, int y, int cellSize)
