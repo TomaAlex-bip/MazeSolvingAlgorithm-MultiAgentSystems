@@ -258,16 +258,77 @@ namespace MazeProject
                             break;
                         case MazeCell.Path:
                             if (!useWeights)
-                            {
                                 g.FillRectangle(Brushes.White, x * cellSize, y * cellSize, cellSize, cellSize);
-                                break;
-                            }
-                            Color c = GetPathColor(maze, x, y);
-                            g.FillRectangle(new SolidBrush(c), x * cellSize, y * cellSize, cellSize, cellSize);
+                            else
+                                DrawPathWithWeights(g, maze, x, y, cellSize);
                             break;
                     }
                 }
             }
+        }
+
+        private void DrawPathWithWeights(Graphics g, Maze maze, int x, int y, int cellSize)
+        {
+            Point topLeft = new(x * cellSize, y * cellSize);
+            Point topRight = new(x * cellSize + cellSize, y * cellSize);
+            Point bottomLeft = new(x * cellSize, y * cellSize + cellSize);
+            Point bottomRight = new(x * cellSize + cellSize, y * cellSize + cellSize);
+            Point center = new(x * cellSize + cellSize / 2, y * cellSize + cellSize / 2);
+
+            Color topColor = Color.White;
+            Color bottomColor = Color.White;
+            Color leftColor = Color.White;
+            Color rightColor = Color.White;
+
+            int maxColor = 250;
+            int minColor = 50;
+
+            if (maze.Cells[x, y + 1].UpWeight != null)
+            {
+                var w = (float)maze.Cells[x, y + 1].UpWeight!;
+                topColor = GetColorFromWeight(w, minColor, maxColor);
+            }
+            if (maze.Cells[x, y - 1].DownWeight != null)
+            {
+                var w = (float)maze.Cells[x, y - 1].DownWeight!;
+                bottomColor = GetColorFromWeight(w, minColor, maxColor);
+            }
+            if (maze.Cells[x + 1, y].LeftWeight != null)
+            {
+                var w = (float)maze.Cells[x + 1, y].LeftWeight!;
+                leftColor = GetColorFromWeight(w, minColor, maxColor);
+            }
+            if (maze.Cells[x - 1, y].RightWeight != null)
+            {
+                var w = (float)maze.Cells[x - 1, y].RightWeight!;
+                rightColor = GetColorFromWeight(w, minColor, maxColor);
+            }
+
+            g.FillPolygon(new SolidBrush(topColor), new Point[] { topLeft, center, topRight }); // top triangle
+            g.FillPolygon(new SolidBrush(bottomColor), new Point[] { bottomLeft, center, bottomRight }); // bottom triangle
+            g.FillPolygon(new SolidBrush(leftColor), new Point[] { topLeft, center, bottomLeft }); // left triangle
+            g.FillPolygon(new SolidBrush(rightColor), new Point[] { topRight, center, bottomRight }); // right triangle
+        }
+
+        private void DrawPathWithWeightsOld(Graphics g, Maze maze, int x, int y, int cellSize)
+        {
+            Color c = GetPathColor(maze, x, y);
+            g.FillRectangle(new SolidBrush(c), x * cellSize, y * cellSize, cellSize, cellSize);
+        }
+
+        private Color GetColorFromWeight(float weight, int minColor, int maxColor)
+        {
+            if (weight < 0.5)
+            {
+                int colorValue = minColor + (int)(maxColor * weight);
+                return Color.FromArgb(255, colorValue, colorValue);
+            }
+            else if (weight > 0.5)
+            {
+                int colorValue = (int)(maxColor * (weight - 0.5));
+                return Color.FromArgb(colorValue, 255, colorValue);
+            }
+            return Color.White;
         }
 
         private Color GetPathColor(Maze maze, int x, int y)
