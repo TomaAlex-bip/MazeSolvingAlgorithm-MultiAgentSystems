@@ -293,7 +293,7 @@ namespace MazeProject
             for (int i = 0; i < noAgents; i++)
             {
                 // create agents and add them to the environment
-                var agent = new MazeAgent(_maze, $"agent_{i}");
+                var agent = new MazeAgent(_maze, $"agent_{i}", checkBoxAgentsRandomMovement.Checked);
                 _environment.Add(agent);
                 _agents.Add(agent);
                 agent.OnFoundExitEvent += Agent_OnFoundExitEvent;
@@ -318,6 +318,7 @@ namespace MazeProject
 
         private async Task<List<SimulationResults>> StartSimulation(int noAgents, int noSimulations)
         {
+            var randomMovement = checkBoxAgentsRandomMovement.Checked;
             List<SimulationResults> simulationResults = new();
 
             if (_maze == null)
@@ -332,7 +333,7 @@ namespace MazeProject
                 for (int i = 0; i < noAgents; i++)
                 {
                     // create agents and add them to the environment
-                    var agent = new MazeAgent(_maze, $"agent_{i}");
+                    var agent = new MazeAgent(_maze, $"agent_{i}", randomMovement);
                     _environment.Add(agent);
                     _agents.Add(agent);
                     agent.OnFoundExitEvent += (MazeAgent _) => { StopSimulation(); };
@@ -365,7 +366,7 @@ namespace MazeProject
                     MazeHeight = _maze.Height,
                     MazeWidth = _maze.Width,
                     MazeSeed = _maze.Seed,
-                    NoTurns = _noTurns
+                    NoTurns = _noTurns,
                 });
             }
 

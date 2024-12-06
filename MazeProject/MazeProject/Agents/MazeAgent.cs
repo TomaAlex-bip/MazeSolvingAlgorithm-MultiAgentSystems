@@ -34,8 +34,9 @@ namespace MazeProject.Agents
         private readonly Maze _maze;
         private readonly Random _random;
         private bool _isInDeadEnd = false;
+        private bool _moveRandom = false;
 
-        public MazeAgent(Maze maze, string name)
+        public MazeAgent(Maze maze, string name, bool moveRandom)
         {
             X = maze.StartX;
             Y = maze.StartY;
@@ -44,6 +45,7 @@ namespace MazeProject.Agents
             Name = name;
             _maze = new(maze);
             _random = new Random();
+            _moveRandom = moveRandom;
         }
 
         public override void Setup()
@@ -64,6 +66,12 @@ namespace MazeProject.Agents
             var status = VerifyIfFinishIsReachable();
             if (status)
                 return;
+
+            if (_moveRandom)
+            {
+                MoveRandomly();
+                return;
+            }
 
             Move();
 

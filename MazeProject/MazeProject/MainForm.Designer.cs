@@ -50,6 +50,7 @@
             checkBoxMazeWeights = new CheckBox();
             numericNoSimulations = new NumericUpDown();
             buttonStartMultipleSimulations = new Button();
+            checkBoxAgentsRandomMovement = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericMazeWidth).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericMazeHeight).BeginInit();
@@ -61,9 +62,9 @@
             // 
             // pictureBox
             // 
-            pictureBox.Location = new Point(12, 109);
+            pictureBox.Location = new Point(63, 109);
             pictureBox.Name = "pictureBox";
-            pictureBox.Size = new Size(640, 620);
+            pictureBox.Size = new Size(620, 620);
             pictureBox.TabIndex = 0;
             pictureBox.TabStop = false;
             pictureBox.Paint += pictureBox_Paint;
@@ -238,7 +239,7 @@
             checkBoxAnimations.AutoSize = true;
             checkBoxAnimations.Checked = true;
             checkBoxAnimations.CheckState = CheckState.Checked;
-            checkBoxAnimations.Location = new Point(562, 16);
+            checkBoxAnimations.Location = new Point(654, 46);
             checkBoxAnimations.Name = "checkBoxAnimations";
             checkBoxAnimations.Size = new Size(87, 19);
             checkBoxAnimations.TabIndex = 20;
@@ -250,7 +251,7 @@
             checkBoxMazeWeights.AutoSize = true;
             checkBoxMazeWeights.Checked = true;
             checkBoxMazeWeights.CheckState = CheckState.Checked;
-            checkBoxMazeWeights.Location = new Point(562, 46);
+            checkBoxMazeWeights.Location = new Point(551, 46);
             checkBoxMazeWeights.Name = "checkBoxMazeWeights";
             checkBoxMazeWeights.Size = new Size(97, 19);
             checkBoxMazeWeights.TabIndex = 21;
@@ -265,7 +266,7 @@
             numericNoSimulations.Margin = new Padding(0, 3, 3, 3);
             numericNoSimulations.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
             numericNoSimulations.Name = "numericNoSimulations";
-            numericNoSimulations.Size = new Size(54, 23);
+            numericNoSimulations.Size = new Size(72, 23);
             numericNoSimulations.TabIndex = 22;
             numericNoSimulations.Value = new decimal(new int[] { 10, 0, 0, 0 });
             // 
@@ -279,11 +280,22 @@
             buttonStartMultipleSimulations.UseVisualStyleBackColor = true;
             buttonStartMultipleSimulations.Click += buttonStartMultipleSimulations_Click;
             // 
+            // checkBoxAgentsRandomMovement
+            // 
+            checkBoxAgentsRandomMovement.AutoSize = true;
+            checkBoxAgentsRandomMovement.Location = new Point(551, 17);
+            checkBoxAgentsRandomMovement.Name = "checkBoxAgentsRandomMovement";
+            checkBoxAgentsRandomMovement.Size = new Size(132, 19);
+            checkBoxAgentsRandomMovement.TabIndex = 24;
+            checkBoxAgentsRandomMovement.Text = "Random Movement";
+            checkBoxAgentsRandomMovement.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(664, 741);
+            ClientSize = new Size(742, 741);
+            Controls.Add(checkBoxAgentsRandomMovement);
             Controls.Add(buttonStartMultipleSimulations);
             Controls.Add(numericNoSimulations);
             Controls.Add(checkBoxMazeWeights);
@@ -343,5 +355,6 @@
         private CheckBox checkBoxMazeWeights;
         private NumericUpDown numericNoSimulations;
         private Button buttonStartMultipleSimulations;
+        private CheckBox checkBoxAgentsRandomMovement;
     }
 }
