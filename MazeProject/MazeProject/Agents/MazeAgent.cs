@@ -276,7 +276,7 @@ namespace MazeProject.Agents
 
         private bool CanMoveDown()
         {
-            if (Y + 1 >= _maze.Cells.GetLength(0))
+            if (Y + 1 >= _maze.Cells.GetLength(1))
                 return false;
             if (_maze.Cells[X, Y + 1].CellType != (int)MazeCell.Path)
                 return false;
@@ -285,7 +285,7 @@ namespace MazeProject.Agents
 
         private bool CanMoveRight()
         {
-            if (X + 1 >= _maze.Cells.GetLength(1))
+            if (X + 1 >= _maze.Cells.GetLength(0))
                 return false;
             if (_maze.Cells[X + 1, Y].CellType != (int)MazeCell.Path)
                 return false;
