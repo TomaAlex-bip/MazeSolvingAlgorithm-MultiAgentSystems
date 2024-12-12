@@ -156,6 +156,7 @@
             // 
             numericMazeSeed.Location = new Point(398, 43);
             numericMazeSeed.Margin = new Padding(0, 3, 3, 3);
+            numericMazeSeed.Maximum = new decimal(new int[] { 1215752192, 23, 0, 0 });
             numericMazeSeed.Name = "numericMazeSeed";
             numericMazeSeed.Size = new Size(147, 23);
             numericMazeSeed.TabIndex = 9;
