@@ -22,6 +22,8 @@
             LeftWeight = cell.LeftWeight;
         }
 
+        // am ales ca ponderea maxima sa fie 0.5 doar din motiv ca exista o idee sa se marcheze si celulele care duc catre iesire
+        // acele celule ar fi fost marcate cu 1, de asta am ales o valoare neutra (intre 0 si 1)
         internal void ResetWeights()
         {
             if (UpWeight != null)

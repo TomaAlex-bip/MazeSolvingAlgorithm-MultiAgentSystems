@@ -48,11 +48,10 @@ namespace MazeProject.Agents
             _moveRandom = moveRandom;
         }
 
-        public override void Setup()
-        {
-
-        }
-
+        /// <summary>
+        /// La functia Act doar actualizeaza ponderile maze-ului local
+        /// </summary>
+        /// <param name="message"></param>
         public override void Act(ActressMas.Message message)
         {
             if (message.ContentObj is MoveData moveData)
@@ -61,6 +60,9 @@ namespace MazeProject.Agents
             }
         }
 
+        /// <summary>
+        /// Functia este data ca functie de callback, aici este logica de miscare a agentului
+        /// </summary>
         public void MakeTurn()
         {
             var status = VerifyIfFinishIsReachable();
@@ -75,10 +77,13 @@ namespace MazeProject.Agents
 
             Move();
 
+            // daca se afla intr-un capat, pana gaseste o bifurcatie, trebuie sa puna ponderile spre acel capat pe 0
             if (_isInDeadEnd)
             {
                 MoveData moveDataDeadEnd = new(OldX, OldY, X, Y, -1f);
-                Broadcast(moveDataDeadEnd, true);
+                // pentru simplitate am folosit broadcast pentru a trimite la toti agentii mesajul cu actualizat ponderile,
+                // inclusiv el insasi
+                Broadcast(moveDataDeadEnd, true); 
                 OnAgentMoveEvent?.Invoke(moveDataDeadEnd);
             }
             MoveData moveData = new(X, Y, OldX, OldY, -0.1f);
@@ -88,8 +93,14 @@ namespace MazeProject.Agents
 
         private void Move()
         {
+            // salvam directiile posibile intr-un vector
+            // pentru cazul in care exista mai mult de o directie posibila cu aceeasi pondere
+            // in acel caz trebuie aleasa directia in mod aleatoriu
+            // in acelasi timp salvam si ponderea maxima (ponderea maxima poate fi maximum 0.5)
             List<Tuple<MoveDirection, float>> moveDirections = new();
             float maxWeight = 0f;
+            
+            // se verifica fiecare directie si se adauga in vector daca este valida, totodata se actualizeaza ponderea maxima
             if (CanMoveUp())
             {
                 var w = (float)_maze.Cells[X, Y].UpWeight!;
@@ -119,28 +130,35 @@ namespace MazeProject.Agents
                     maxWeight = w;
             }
 
+            // filtram directiile valide pentru a ramane doar cu cele cu ponderea maxima si care nu sunt identice cu directia din care a venit agentul
             var validMoveDirections = moveDirections
                 .Where(x => x.Item2 >= maxWeight)
                 .Where(x => x.Item1 != ComingDirection)
                 .ToList();
 
+            // filtram doar directiile diferite de cea a agentului
             var validMoveDirections2 = moveDirections
                 .Where(x => x.Item1 != ComingDirection)
                 .ToList();
 
+            // daca exista mai mult de o directie in afara de cea din care vine agentul, inseamna ca s-a gasit o bifurcatie
+            // nu mai este nevoie sa fie marcate ponderile celulelor cu 0
             if (validMoveDirections2.Count > 1)
             {
                 _isInDeadEnd = false;
             }
 
+            // daca nu exista nicio directie valida in afara de cea din care vine agentul, inseamna ca agentul se afla intr-un dead end
             if (validMoveDirections.Count == 0)
             {
                 validMoveDirections.Add(new((MoveDirection)ComingDirection!, 0));
                 _isInDeadEnd = true;
             }
 
+            // daca sunt 1 sau mai multe directii cu ponderi maxime, se alege random
             var direction = validMoveDirections[_random.Next(validMoveDirections.Count)];
             
+            // in functie de directie, agentul efectueaza miscarea
             switch (direction.Item1)
             {
                 case MoveDirection.Up:
@@ -167,6 +185,7 @@ namespace MazeProject.Agents
             if (status)
                 return;
 
+            // se alege o directie random
             bool hasMoved = false;
             while (!hasMoved)
             {
@@ -194,25 +213,28 @@ namespace MazeProject.Agents
 
         private bool VerifyIfFinishIsReachable()
         {
+            // in mod normal nu ar trebui sa se intample
+            // se verifica ca agentul sa nu fie pe marginea labirintului, pentru a nu exista exceptii la verificarile de mai jos
             if (X < 1 || Y < 1 || X >= _maze.Width - 1 || Y >= _maze.Height - 1)
                 return false;
 
-            if (_maze.Cells[X + 1, Y].CellType == MazeCell.Exit)
+            // daca se gaseste iesirea se notifica acest lucru
+            if (_maze.Cells[X + 1, Y].CellType == MazeCell.Exit) // celula din dreapta
             {
                 OnFoundExitEvent?.Invoke(this);
                 return true;
             }
-            if (_maze.Cells[X - 1, Y].CellType == MazeCell.Exit)
+            if (_maze.Cells[X - 1, Y].CellType == MazeCell.Exit) // celula din stanga
             {
                 OnFoundExitEvent?.Invoke(this);
                 return true;
             }
-            if (_maze.Cells[X, Y + 1].CellType == MazeCell.Exit)
+            if (_maze.Cells[X, Y + 1].CellType == MazeCell.Exit) // celula de jos
             {
                 OnFoundExitEvent?.Invoke(this);
                 return true;
             }
-            if (_maze.Cells[X, Y - 1].CellType == MazeCell.Exit)
+            if (_maze.Cells[X, Y - 1].CellType == MazeCell.Exit) // celula de sus
             {
                 OnFoundExitEvent?.Invoke(this);
                 return true;

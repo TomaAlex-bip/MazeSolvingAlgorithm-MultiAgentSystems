@@ -277,6 +277,10 @@ namespace MazeProject
             });
         }
 
+        /// <summary>
+        /// Simulare intr-o singura tura
+        /// </summary>
+        /// <param name="noAgents"></param>
         private void StartSimulation(int noAgents)
         {
             var turnTime = (int)numericTurnTime.Value;
@@ -296,11 +300,11 @@ namespace MazeProject
                 var agent = new MazeAgent(_maze, $"agent_{i}", checkBoxAgentsRandomMovement.Checked);
                 _environment.Add(agent);
                 _agents.Add(agent);
-                agent.OnFoundExitEvent += Agent_OnFoundExitEvent;
-                agent.OnAgentMoveEvent += Agent_OnAgentMoveEvent;
-                _environment.OnAgentMoveEvent += agent.MakeTurn;
+                agent.OnFoundExitEvent += Agent_OnFoundExitEvent; // subscribe la evenimentul de gasit iesirea
+                agent.OnAgentMoveEvent += Agent_OnAgentMoveEvent; // subscribe la evenimentul in care s-a miscat agentul, pentru a actualiza ponderile
+                _environment.OnAgentMoveEvent += agent.MakeTurn; // subscribe la evenimentul environmentului pentru a misca agentii la fiecare tura
             }
-            _environment.OnAgentMoveEvent += Environment_OnAgentMoveEvent; ;
+            _environment.OnAgentMoveEvent += Environment_OnAgentMoveEvent; // pentru a contoriza numarul de ture
 
             _simulationThread = new Thread(() =>
             {
@@ -316,6 +320,13 @@ namespace MazeProject
             _startTime = DateTime.Now;
         }
 
+        /// <summary>
+        /// Simulare in mai multe ture, cu salvare de statistici
+        /// </summary>
+        /// <param name="noAgents"></param>
+        /// <param name="noSimulations"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         private async Task<List<SimulationResults>> StartSimulation(int noAgents, int noSimulations)
         {
             var randomMovement = checkBoxAgentsRandomMovement.Checked;

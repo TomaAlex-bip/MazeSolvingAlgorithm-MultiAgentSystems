@@ -12,6 +12,7 @@ namespace MazeProject.Agents
         {
         }
 
+        // am suprascris metoda pentru a exista o notificare la fiecare tura pentru a actualiza agentii o singura data
         public override void TurnFinished(int turn)
         {
             OnAgentMoveEvent?.Invoke();
