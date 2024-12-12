@@ -422,11 +422,15 @@ namespace MazeProject
 
         private void DrawPathWithWeights(Graphics g, Maze maze, int x, int y, int cellSize)
         {
-            Point topLeft = new(x * cellSize, y * cellSize);
-            Point topRight = new(x * cellSize + cellSize, y * cellSize);
-            Point bottomLeft = new(x * cellSize, y * cellSize + cellSize);
-            Point bottomRight = new(x * cellSize + cellSize, y * cellSize + cellSize);
+            Point topLeft = new(x * cellSize + cellSize / 4, y * cellSize + cellSize / 4);
+            Point topRight = new(x * cellSize + cellSize - cellSize / 4, y * cellSize + cellSize / 4);
+            Point bottomLeft = new(x * cellSize + cellSize / 4, y * cellSize + cellSize - cellSize / 4);
+            Point bottomRight = new(x * cellSize + cellSize - cellSize / 4, y * cellSize + cellSize - cellSize / 4);
             Point center = new(x * cellSize + cellSize / 2, y * cellSize + cellSize / 2);
+            Point centerLeft = new(x * cellSize, y * cellSize + cellSize / 2);
+            Point centerRight = new(x * cellSize + cellSize, y * cellSize + cellSize / 2);
+            Point centerTop = new(x * cellSize + cellSize / 2, y * cellSize);
+            Point centerBottom = new(x * cellSize + cellSize / 2, y * cellSize + cellSize);
 
             Color topColor = Color.White;
             Color bottomColor = Color.White;
@@ -457,10 +461,10 @@ namespace MazeProject
                 rightColor = GetColorFromWeight(w, minColor, maxColor);
             }
 
-            g.FillPolygon(new SolidBrush(topColor), new Point[] { topLeft, center, topRight }); // top triangle
-            g.FillPolygon(new SolidBrush(bottomColor), new Point[] { bottomLeft, center, bottomRight }); // bottom triangle
-            g.FillPolygon(new SolidBrush(leftColor), new Point[] { topLeft, center, bottomLeft }); // left triangle
-            g.FillPolygon(new SolidBrush(rightColor), new Point[] { topRight, center, bottomRight }); // right triangle
+            g.FillPolygon(new SolidBrush(topColor), new Point[] { topLeft, centerTop, topRight }); // top triangle
+            g.FillPolygon(new SolidBrush(bottomColor), new Point[] { bottomLeft, centerBottom, bottomRight }); // bottom triangle
+            g.FillPolygon(new SolidBrush(leftColor), new Point[] { topLeft, centerLeft, bottomLeft }); // left triangle
+            g.FillPolygon(new SolidBrush(rightColor), new Point[] { topRight, centerRight, bottomRight }); // right triangle
             g.FillRectangle(Brushes.White, x * cellSize + cellSize / 4, y * cellSize + cellSize / 4,
                 cellSize / 2 + 1, cellSize / 2 + 1); // fill half center
         }
@@ -537,11 +541,11 @@ namespace MazeProject
             int minXY = Math.Min(pictureBox.Width, pictureBox.Height);
             int maxMazeXY = Math.Max(_maze.Cells.GetLength(0), _maze.Cells.GetLength(1));
             int cellSize = minXY / maxMazeXY;
-            int agentSize = (int)((minXY / maxMazeXY) * 0.9);
+            int agentSize = (int)((minXY / maxMazeXY) * 0.7);
 
             foreach (var agent in _agents)
             {
-                g.FillEllipse(Brushes.Blue, agent.X * cellSize, agent.Y * cellSize, agentSize, agentSize);
+                g.FillEllipse(Brushes.Blue, agent.X * cellSize + agentSize / 4, agent.Y * cellSize + agentSize / 4, agentSize, agentSize);
                 AnimateAgent(agent);
             }
 
@@ -564,7 +568,7 @@ namespace MazeProject
             int minXY = Math.Min(pictureBox.Width, pictureBox.Height);
             int maxMazeXY = Math.Max(_maze.Cells.GetLength(0), _maze.Cells.GetLength(1));
             int cellSize = minXY / maxMazeXY;
-            int agentSize = (int)((minXY / maxMazeXY) * 0.9);
+            int agentSize = (int)((minXY / maxMazeXY) * 0.7);
 
             int animationSteps = 2;
             if (agent.X != agent.OldX)
@@ -577,7 +581,7 @@ namespace MazeProject
                     else
                         dx = (animationSteps - a) / (double)animationSteps;
 
-                    g.FillEllipse(Brushes.Blue, (int)((agent.X + dx) * cellSize), agent.Y * cellSize, agentSize, agentSize);
+                    g.FillEllipse(Brushes.Blue, (int)((agent.X + dx) * cellSize + agentSize / 4), agent.Y * cellSize, agentSize, agentSize);
 
                     Graphics pbg = pictureBox.CreateGraphics();
                     pbg.DrawImage(final, 0, 0);
@@ -594,8 +598,7 @@ namespace MazeProject
                     else
                         dy = (animationSteps - a) / (double)animationSteps;
 
-                    g.FillEllipse(Brushes.Blue, agent.X * cellSize, (int)((agent.Y + dy) * cellSize), agentSize, agentSize);
-
+                    g.FillEllipse(Brushes.Blue, agent.X * cellSize, (int)((agent.Y + dy) * cellSize + agentSize / 4), agentSize, agentSize);
 
                     Graphics pbg = pictureBox.CreateGraphics();
                     pbg.DrawImage(final, 0, 0);
